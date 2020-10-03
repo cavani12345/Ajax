@@ -1,0 +1,327 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css">
+        <link rel="stylesheet" href="lib\font-awesome-4.7.0\css/font-awesome.min.css">
+        <link rel="stylesheet" href="jquery-ui.css">
+        <script src="jquery-3.3.1.min.js"></script>
+        <script src="jquery-ui.js"></script>
+        <style>
+            .mylose:hover{
+                font-size: 50px;
+                color: red;
+            }
+            td{
+                padding-left: 15px;
+            }
+            img{
+                width: 20px;
+                height: 20px;
+            }
+            ul{
+                list-style-type: none;
+               
+            }
+            ul li{
+                padding-top: 20px;
+                border-top: 1px solid grey;
+            }
+
+            ul li a{
+                font-size: 20px;
+                text-transform: capitalize;
+                padding: 20px 20px;
+                text-decoration: none;
+               padding-top: 20px;
+               color: grey;
+            }
+            ul li a:hover{
+                text-decoration: none;
+                transition: 0.2s;
+                font-size: 22px;
+            }
+            .modify{
+                padding-left: 20px;
+            }
+            .mycolor{
+                color: darkgreen;
+            }
+        </style>
+    </head>
+    <body>
+    <div class="container-fluid">
+    <br>
+    
+        <table>
+            <tr>
+                <td><a href=""><i class="fa fa-bell"></i></a></td>
+                <td><a href=""><i class="fa fa-envelope"></i></a></td>
+                <td><a id="myupload"><img src="eddy.JPG" class="img-circle" alt=""></a></td>
+                <td></td>
+
+            </tr>
+        </table>
+    
+    <div class="modal fade" id="exampleModals">
+        <div class="modal-dialog" style="width: 280px; position: absolute; top: 20px; left: 20px;">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title text-center" id="exampleModalLabel">UPDATE USER DATA</h5>
+              <button type="button" class="close  mylose" data-dismiss="modal" aria-label="Close">
+               
+              </button>
+            </div>
+            <div class="modal-body">
+              <ul>
+                <li class="active"><a href="" ><i class=" fa fa-dashboard mycolor"></i><strong class="modify"> Dashboard</strong></a></li>
+                  <li><a href=""><i class="fa fa-user mycolor"></i><strong class="modify" >Profile</strong></a></li>
+                  <li><a href=""><i class="fa fa-user mycolor"></i><strong class="modify"></strong>Message</strong></a></li>
+                  <li><a href=""><i class=" fa fa-user-secret mycolor"></i><strong class="modify"></strong>Preference</strong></a></li>
+                  <li><a href=""><i class="fa fa-sign-out mycolor"></i><strong class="modify">Logout</strong></a></li>
+
+              </ul>
+            </div>
+            <div class="modal-footer">
+             
+            </div>
+          </div>
+        </div>
+      </div>
+        <button type="button" id="add" class="btn btn-primary pull-right">ADD</button>
+        <br><br>
+        <div id="user-data" class="table-responsive">
+        </div>
+        <div id="user_dialog" title="Add Record">
+            <form id="user_form" >
+                <div class="form-group">
+                <label for="firstname" >FirstName</label>
+                    <input type="text" class="form-control" name="firstname" id="firstname">
+                </div>
+                <div class="form-group">
+                    <label for="lastname" >LastName</label>
+                
+                        <input type="text" class="form-control" name="lastname" id="lastname">
+                    
+                </div>
+                <div class="form-group">
+                <label for="email" >Email</label>
+                
+                    <input type="text" class="form-control" name="email" id="email">
+                
+            </div>
+            
+            <div class="form-group">
+                <input type="hidden" id="hidden_update" value="">
+                <input type="submit"  class=" btn btn-info " name="hidden_but" id="hidden_but" value="Update">
+                <input type="submit" class=" btn btn-info pull-right" name="submit" id="submit" value="Insert">
+                
+                </div>
+
+            </form>
+        </div>
+        <div id="action_alert" title="ACTION">   
+        </div>
+        <div id="confirmation-box" title="Confirmation">
+            <input type="hidden" id="hidden_id" value="">
+            <strong> Do you want to delete data ?</strong>
+        </div>
+        <div class="modal fade" id="exampleModal">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                  <button type="button" class="close mylose" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body" id="user_body">
+                
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+              </div>
+            </div>
+          </div>
+    </div> 
+    <script>
+        $(document).ready(function(){
+            $("#myupload").click(function(){
+            $("#exampleModals").modal("show");
+
+});
+            
+            load_data();
+            function load_data(){
+                $.ajax({
+                    url:"fetch.php",
+                    method:"POST",
+                    success:function(data){
+                        $("#user-data").html(data);
+                    }
+                });
+            }
+            $("#user_dialog").dialog({
+                autoOpen:false,
+                width:600,
+            }); 
+            $("#add").click(function(){
+                $("#hidden_but").hide();
+                $("#user_dialog").attr('title', 'data');
+                //$("#action").val('Insert');
+                $("#submit").val('Insert');
+                $("#user_form")[0].reset();
+                $("#submit").attr('disabled',false);
+                $("#user_dialog").dialog('open');
+            });
+            $("#submit").click(function(e){
+                e.preventDefault();
+                $("#submit").attr('disabled','disabled');
+                
+                var firstname= $("#firstname").val();
+                var lastname= $("#lastname").val();
+                var email= $("#email").val();
+                $.ajax({
+                    url:"action.php",
+                    method:"POST",
+                        
+                        data:{
+                        "insert_btn":1,
+                        "firstname":firstname,
+                        "lastname":lastname,
+                        "email":email,
+                         },
+                    success:function(data){
+                        $("#user_dialog").dialog('close');
+                        $("#action_alert").html(data);
+                        $("#action_alert").dialog('open');
+                            load_data();
+
+
+                    }
+                });
+
+            });
+
+ $("#action_alert").dialog({
+     autoOpen:false,
+ });
+ 
+$(document).on('click','.edit',function(){
+    var id = $(this).attr("id");
+
+    //$("#hidden_but").show();
+    $("#submit").hide();
+    //hidden_update
+    $("#hidden_update").val(id);
+    //$("#hidden_update").hide();
+     var action = "fetch_single";
+    $.ajax({
+        url:"edit.php",
+        method:"POST",
+        data:{id:id},
+        dataType:"json",
+        success:function(data){
+           $("#firstname").val(data[0]);
+            $("#lastname").val(data[1]);
+            $("#email").val(data[2]);
+             $("#user_dialog").attr('title', 'Edit');
+             $("#action").val("update");
+            // $("#hidden_id").val(id);
+            $("#submit").val("Update");
+            $("#user_dialog").dialog('open');
+        }
+    });
+
+});
+
+$("#confirmation-box").dialog({
+    autoOpen:false,
+    modal:true,
+    buttons:{
+        Okay:function(){
+            var id= $("#hidden_id").val();
+            //var action ="delete";
+            
+    $.ajax({
+        url:"delete.php",
+        method:"POST",
+        data:{ id:id},
+        success:function(data){
+            $("#confirmation-box").dialog('close');
+            /*
+            $("#confirmation-box").dialog('close');
+            */
+            $("#action_alert").html(data);
+            $("#action_alert").dialog('open');
+            load_data();
+        }
+    });
+
+        },
+        Cancel:function(){
+            $(this).dialog('close');
+        }
+    }
+});
+$(document).on('click','.delete',function(){
+    var id= $(this).attr("id");
+    // pass value to jquery dialog box
+    $("#hidden_id").val(id);
+    $("#confirmation-box").dialog('open');
+});
+$("#hidden_but").click(function(e){
+                var id= $("#hidden_update").val();
+                var firstname= $("#firstname").val();
+                var lastname= $("#lastname").val();
+                var email= $("#email").val();
+                $.ajax({
+                    url:"update.php",
+                    method:"POST",  
+                    data:{
+                        
+                        "update":1,
+                        "id":id,
+                        "firstname":firstname,
+                        "lastname":lastname,
+                        "email":email,
+                         },
+                    success:function(data){
+                        
+                        $("#user_dialog").dialog('close');
+                        $("#action_alert").html(data);
+                        $("#action_alert").dialog('open');
+                        load_data()
+
+
+                    }
+                });
+            });
+$(document).on('click','.view_data', function(){
+    var user_id= $(this).attr("id");
+    
+    $.ajax({
+        url:"fetch_single.php",
+        method:"POST",
+        data:{ user_id:user_id},
+        success:function(data){
+            $("#user_body").html(data);
+            $("#exampleModal").modal("show");  
+        }
+
+    });
+  
+});
+
+    
+});
+
+        
+    </script> 
+     <script src="lib/bootstrap/js/bootstrap.min.js"></script>
+    </body>
+    </html>
